@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hospital System</title>
+
+<style>
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  height:100vh;
+  background-image: url("https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* DARK OVERLAY */
+.overlay{
+  background: rgba(0,0,0,0.6);
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  color:white;
+}
+
+h1{ font-size:40px; margin-bottom:6px; }
+p { margin-bottom:20px; color: #ddd; }
+
+/* STATS BAR */
+.stats {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.stat-card {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 10px;
+  padding: 12px 24px;
+  color: white;
+  text-align: center;
+  min-width: 110px;
+}
+
+.stat-card .num { font-size: 28px; font-weight: bold; }
+.stat-card .lbl { font-size: 12px; opacity: 0.85; }
+
+/* CARDS GRID */
+.cards {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  max-width: 720px;
+}
+
+.card{
+  background:white;
+  color:black;
+  padding:20px;
+  width:200px;
+  border-radius:12px;
+  box-shadow:0 5px 15px rgba(0,0,0,0.3);
+  cursor:pointer;
+  transition:0.3s;
+  text-align: center;
+  font-size: 15px;
+}
+
+.card:hover{ transform:scale(1.06); }
+
+.card.big{
+  width:260px;
+  font-size:18px;
+  font-weight:bold;
+  background: #2196F3;
+  color: white;
+}
+
+.card.admin {
+  background: #FF9800;
+  color: white;
+  font-weight: bold;
+}
+
+a{ text-decoration:none; }
+</style>
+</head>
+
+<body>
+
+<div class="overlay">
+
+<h1>🏥 Hospital System</h1>
+<p>Manage Doctors, Patients and Appointments easily</p>
+
+<!-- LIVE STATS -->
+<div class="stats" id="stats">
+  <div class="stat-card"><div class="num" id="s-doc">--</div><div class="lbl">Doctors</div></div>
+  <div class="stat-card"><div class="num" id="s-pat">--</div><div class="lbl">Patients</div></div>
+  <div class="stat-card"><div class="num" id="s-apt">--</div><div class="lbl">Appointments</div></div>
+  <div class="stat-card"><div class="num" id="s-rev">--</div><div class="lbl">Revenue (₹)</div></div>
+</div>
+
+<!-- NAVIGATION CARDS -->
+<div class="cards">
+
+  <a href="appointment.html">
+    <div class="card big">📅 Book Appointment</div>
+  </a>
+
+  <a href="doctors.html">
+    <div class="card">👨‍⚕️ View Doctors</div>
+  </a>
+
+  <a href="patients.html">
+    <div class="card">🧑 View Patients</div>
+  </a>
+
+  <a href="appointments.html">
+    <div class="card">📋 View Appointments</div>
+  </a>
+
+  <a href="add_doctor.html">
+    <div class="card admin">➕ Add Doctor</div>
+  </a>
+
+</div>
+
+</div>
+
+<script>
+// LOAD STATS
+fetch("http://localhost:3000/stats")
+.then(res => res.json())
+.then(data => {
+    document.getElementById("s-doc").innerText = data.total_doctors;
+    document.getElementById("s-pat").innerText = data.total_patients;
+    document.getElementById("s-apt").innerText = data.total_appointments;
+    document.getElementById("s-rev").innerText = "₹" + Number(data.total_revenue).toLocaleString("en-IN");
+})
+.catch(() => {
+    // server not running — silently skip stats
+});
+</script>
+
+</body>
+</html>

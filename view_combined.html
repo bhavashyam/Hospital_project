@@ -1,0 +1,11 @@
+<h2>Appointments</h2>
+<pre id="a"></pre>
+
+<script>
+fetch("http://localhost:3000/appointments")
+.then(r=>r.json())
+.then(data=>{
+document.getElementById("a").innerText =
+JSON.stringify(data, null, 2);
+});
+</script>

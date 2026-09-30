@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Add Doctor</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: url("https://images.unsplash.com/photo-1579684385127-1ef15d508118") no-repeat center center/cover;
+  min-height: 100vh;
+}
+
+.overlay {
+  background: rgba(0,0,0,0.78);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 30px;
+}
+
+.back-btn {
+  text-decoration: none;
+  background: #607D8B;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-bottom: 20px;
+  align-self: flex-start;
+}
+
+.back-btn:hover { background: #455A64; }
+
+.form-box {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 380px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+
+h2 {
+  text-align: center;
+  margin-bottom: 18px;
+  color: #333;
+}
+
+label {
+  font-size: 13px;
+  color: #555;
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 3px;
+}
+
+input {
+  width: 100%;
+  padding: 9px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+input:focus { outline: none; border-color: #4CAF50; }
+
+/* PASSWORD FIELD */
+.pwd-row {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 14px;
+}
+
+.pwd-row label {
+  color: #856404;
+  font-weight: bold;
+}
+
+button[type="submit"] {
+  width: 100%;
+  padding: 11px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  margin-top: 18px;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover { background: #388E3C; }
+
+#msg {
+  text-align: center;
+  margin-top: 12px;
+  font-weight: bold;
+  font-size: 15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="overlay">
+
+<a href="index.html" class="back-btn">⬅ Back to Home</a>
+
+<div class="form-box">
+
+<h2>➕ Add New Doctor</h2>
+
+<form id="form">
+  <label>Full Name</label>
+  <input name="name" placeholder="e.g. Dr. Arjun Mehta" required>
+
+  <label>Specialization</label>
+  <input name="specialization" placeholder="e.g. Cardiologist" required>
+
+  <label>Email</label>
+  <input name="email" type="email" placeholder="doctor@hospital.com">
+
+  <label>Available From (time)</label>
+  <input name="availability_from" type="time" required>
+
+  <label>Available To (time)</label>
+  <input name="availability_to" type="time" required>
+
+  <label>Room No</label>
+  <input name="room_no" placeholder="e.g. A-101">
+
+  <!-- ADMIN PASSWORD -->
+  <div class="pwd-row">
+    <label>🔐 Admin Password (required)</label>
+    <input name="admin_pwd" type="password" placeholder="Enter admin password" required>
+  </div>
+
+  <button type="submit">➕ Add Doctor</button>
+</form>
+
+<div id="msg"></div>
+
+</div>
+</div>
+
+<script>
+document.getElementById("form").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const adminPwd = document.querySelector('[name="admin_pwd"]').value;
+
+    const data = {
+        name:              document.querySelector('[name="name"]').value,
+        specialization:    document.querySelector('[name="specialization"]').value,
+        email:             document.querySelector('[name="email"]').value,
+        availability_from: document.querySelector('[name="availability_from"]').value,
+        availability_to:   document.querySelector('[name="availability_to"]').value,
+        room_no:           document.querySelector('[name="room_no"]').value
+    };
+
+    fetch("http://localhost:3000/addDoctor", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "x-admin-password": adminPwd
+        },
+        body: JSON.stringify(data)
+    })
+    .then(res => {
+        if (res.status === 401) return res.json().then(e => { throw new Error(e.error); });
+        return res.text();
+    })
+    .then(msg => {
+        document.getElementById("msg").style.color = "green";
+        document.getElementById("msg").innerText = "✅ " + msg;
+        document.getElementById("form").reset();
+    })
+    .catch(err => {
+        document.getElementById("msg").style.color = "red";
+        document.getElementById("msg").innerText = "❌ " + err.message;
+    });
+});
+</script>
+
+</body>
+</html>

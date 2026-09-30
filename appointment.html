@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Book Appointment</title>
+
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: url("https://images.unsplash.com/photo-1584467735871-8e85353a8413") no-repeat center center/cover;
+}
+
+.overlay {
+  background: rgba(0,0,0,0.75);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+}
+
+.back-btn {
+  text-decoration: none;
+  background: #607D8B;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  margin-bottom: 20px;
+  align-self: flex-start;
+}
+
+.back-btn:hover { background: #455A64; }
+
+.form-box {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  width: 370px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+
+h2 { text-align: center; margin-bottom: 16px; color: #333; }
+
+label {
+  font-size: 13px;
+  color: #555;
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 3px;
+}
+
+input, select {
+  width: 100%;
+  padding: 9px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+/* AVAILABILITY BADGE */
+#availMsg {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: none;
+}
+
+.avail-ok   { background: #e8f5e9; color: #2e7d32; }
+.avail-busy { background: #ffebee; color: #c62828; }
+
+button[type="submit"] {
+  width: 100%;
+  padding: 11px;
+  background: #2196F3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  margin-top: 18px;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover { background: #1565C0; }
+</style>
+</head>
+
+<body>
+
+<div class="overlay">
+
+<a href="index.html" class="back-btn">⬅ Back to Home</a>
+
+<div class="form-box">
+
+<h2>📅 Book Appointment</h2>
+
+<form id="form">
+
+  <label>Patient Name</label>
+  <input name="pname" placeholder="Full name" required>
+
+  <label>Gender</label>
+  <select name="gender">
+    <option>Male</option>
+    <option>Female</option>
+    <option>Other</option>
+  </select>
+
+  <label>Age</label>
+  <input name="age" type="number" placeholder="Age" required>
+
+  <label>Disease / Reason</label>
+  <input name="disease" placeholder="e.g. Fever, Checkup" required>
+
+  <label>Blood Group</label>
+  <input name="blood_group" placeholder="e.g. A+, O-">
+
+  <label>Select Doctor</label>
+  <select name="doctor_id" id="doctors" onchange="checkAvailability()"></select>
+
+  <label>Appointment Date</label>
+  <input type="date" name="date" id="dateInput" onchange="checkAvailability()" required>
+
+  <!-- AVAILABILITY STATUS -->
+  <div id="availMsg"></div>
+
+  <label>Bill Amount (₹)</label>
+  <input type="number" name="bill" placeholder="e.g. 500" required>
+
+  <button type="submit">📅 Book Appointment</button>
+
+</form>
+
+</div>
+</div>
+
+<script>
+// LOAD DOCTORS DROPDOWN
+window.onload = function(){
+    fetch("http://localhost:3000/doctors")
+    .then(res => res.json())
+    .then(data => {
+        let html = "<option value=''>-- Select Doctor --</option>";
+        data.forEach(d => {
+            html += `<option value="${d.doctor_id}">
+                ${d.name} (${d.specialization})
+            </option>`;
+        });
+        document.getElementById("doctors").innerHTML = html;
+    });
+};
+
+// CHECK DOCTOR AVAILABILITY when doctor or date changes
+function checkAvailability() {
+    const doctorId = document.getElementById("doctors").value;
+    const date     = document.getElementById("dateInput").value;
+    const msg      = document.getElementById("availMsg");
+
+    if (!doctorId || !date) { msg.style.display = "none"; return; }
+
+    fetch(`http://localhost:3000/checkAvailability?doctor_id=${doctorId}&date=${date}`)
+    .then(res => res.json())
+    .then(data => {
+        msg.style.display = "block";
+        if (data.available) {
+            msg.className = "avail-ok";
+            msg.innerText = "✅ Doctor is available on this date!";
+        } else {
+            msg.className = "avail-busy";
+            msg.innerText = `⚠️ Doctor has ${data.appointments_on_date} appointment(s) on this date.`;
+        }
+    });
+}
+
+// FORM SUBMIT
+document.getElementById("form").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const data = {
+        pname:       document.querySelector('[name="pname"]').value,
+        gender:      document.querySelector('[name="gender"]').value,
+        age:         document.querySelector('[name="age"]').value,
+        disease:     document.querySelector('[name="disease"]').value,
+        blood_group: document.querySelector('[name="blood_group"]').value,
+        doctor_id:   document.getElementById("doctors").value,
+        date:        document.querySelector('[name="date"]').value,
+        bill:        document.querySelector('[name="bill"]').value
+    };
+
+    if (!data.doctor_id) { alert("Please select a doctor."); return; }
+
+    fetch("http://localhost:3000/bookAppointment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    })
+    .then(res => res.text())
+    .then(msg => {
+        alert(msg);
+        if (msg.includes("✅")) {
+            window.location.href = "success.html";
+        }
+    })
+    .catch(() => alert("❌ Error connecting to server."));
+});
+</script>
+
+</body>
+</html>

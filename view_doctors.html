@@ -1,0 +1,11 @@
+<h2>Patients</h2>
+<pre id="p"></pre>
+
+<script>
+fetch("http://localhost:3000/patients")
+.then(r=>r.json())
+.then(data=>{
+document.getElementById("p").innerText =
+JSON.stringify(data, null, 2);
+});
+</script>
