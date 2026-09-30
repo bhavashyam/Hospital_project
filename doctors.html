@@ -104,7 +104,7 @@ tr:hover { background: #f1f8e9; }
 
 <script>
 window.onload = function(){
-    fetch("http://localhost:3000/doctors")
+    fetch("/doctors")
     .then(res => res.json())
     .then(data => {
         let html = "";

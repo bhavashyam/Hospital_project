@@ -137,7 +137,7 @@ a{ text-decoration:none; }
 
 <script>
 // LOAD STATS
-fetch("http://localhost:3000/stats")
+fetch("/stats")
 .then(res => res.json())
 .then(data => {
     document.getElementById("s-doc").innerText = data.total_doctors;

@@ -162,7 +162,7 @@ document.getElementById("form").addEventListener("submit", function(e) {
         room_no:           document.querySelector('[name="room_no"]').value
     };
 
-    fetch("http://localhost:3000/addDoctor", {
+    fetch("/addDoctor", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

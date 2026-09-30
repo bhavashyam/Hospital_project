@@ -172,7 +172,7 @@ function renderPatients(data) {
 
 function loadAll() {
     document.getElementById("search").value = "";
-    fetch("http://localhost:3000/patients")
+    fetch("/patients")
     .then(res => res.json())
     .then(data => renderPatients(data))
     .catch(() => {
@@ -183,7 +183,7 @@ function loadAll() {
 function searchPatients() {
     const q = document.getElementById("search").value.trim();
     if (!q) { loadAll(); return; }
-    fetch("http://localhost:3000/searchPatient?q=" + encodeURIComponent(q))
+    fetch("/searchPatient?q=" + encodeURIComponent(q))
     .then(res => res.json())
     .then(data => renderPatients(data));
 }
@@ -199,7 +199,7 @@ function deletePatient(id, name) {
     const pwd = prompt(`🔐 Enter admin password to delete patient: ${name}`);
     if (!pwd) return;
 
-    fetch("http://localhost:3000/deletePatient/" + id, {
+    fetch("/deletePatient/" + id, {
         method: "DELETE",
         headers: { "x-admin-password": pwd }
     })

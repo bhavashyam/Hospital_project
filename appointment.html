@@ -142,7 +142,7 @@ button[type="submit"]:hover { background: #1565C0; }
 <script>
 // LOAD DOCTORS DROPDOWN
 window.onload = function(){
-    fetch("http://localhost:3000/doctors")
+    fetch("/doctors")
     .then(res => res.json())
     .then(data => {
         let html = "<option value=''>-- Select Doctor --</option>";
@@ -163,7 +163,7 @@ function checkAvailability() {
 
     if (!doctorId || !date) { msg.style.display = "none"; return; }
 
-    fetch(`http://localhost:3000/checkAvailability?doctor_id=${doctorId}&date=${date}`)
+    fetch(`/checkAvailability?doctor_id=${doctorId}&date=${date}`)
     .then(res => res.json())
     .then(data => {
         msg.style.display = "block";
@@ -194,7 +194,7 @@ document.getElementById("form").addEventListener("submit", function(e){
 
     if (!data.doctor_id) { alert("Please select a doctor."); return; }
 
-    fetch("http://localhost:3000/bookAppointment", {
+    fetch("/bookAppointment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
