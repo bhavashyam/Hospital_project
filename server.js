@@ -8,14 +8,15 @@ const app = express();
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(express.static(__dirname));
+
 /* ---------------- DATABASE CONNECTION ---------------- */
 
 const db = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "root123",   // change if needed
-    database: "hospital"
+    host: process.env.DB_HOST || "localhost",
+    user: process.env.DB_USER || "root",
+    password: process.env.DB_PASSWORD || "root123",
+    database: process.env.DB_NAME || "hospital",
+    port: process.env.DB_PORT || 3306
 });
 
 db.connect((err) => {
@@ -263,6 +264,7 @@ db.query("SELECT COUNT(*) AS total FROM Patient", (err, result) => {
 
 /* ---------------- SERVER START ---------------- */
 
-app.listen(3000, () => {
-    console.log("🚀 Server running on http://localhost:3000");
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`);
 });
