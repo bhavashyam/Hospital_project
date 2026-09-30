@@ -8,6 +8,12 @@ const app = express();
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.static(__dirname));
+
+// ROOT ROUTE
+app.get("/", (req, res) => {
+    res.sendFile(__dirname + "/index.html");
+});
 
 /* ---------------- DATABASE CONNECTION ---------------- */
 
@@ -301,17 +307,6 @@ app.get("/stats", (req, res) => {
     );
 });
 
-db.query("SELECT DATABASE()", (err, result) => {
-    console.log("DB NAME:", result);
-});
-
-db.query("SHOW TABLES", (err, result) => {
-    console.log("TABLES:", result);
-});
-
-db.query("SELECT COUNT(*) AS total FROM Patient", (err, result) => {
-    console.log("PATIENT COUNT:", result);
-});
 
 /* ---------------- SERVER START ---------------- */
 
