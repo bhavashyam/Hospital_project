@@ -18,14 +18,65 @@ const db = mysql.createConnection({
     database: process.env.DB_NAME || "hospital",
     port: process.env.DB_PORT || 3306
 });
-
 db.connect((err) => {
     if (err) {
         console.log("❌ DB Error:", err);
     } else {
         console.log("✅ MySQL Connected");
+        initDB();
     }
 });
+
+function initDB() {
+    const createDoctor = `
+    CREATE TABLE IF NOT EXISTS Doctor (
+        doctor_id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        specialization VARCHAR(100) NOT NULL,
+        email VARCHAR(100),
+        availability_from TIME,
+        availability_to TIME,
+        room_no VARCHAR(20)
+    )`;
+
+    const createPatient = `
+    CREATE TABLE IF NOT EXISTS Patient (
+        patient_id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100) NOT NULL,
+        gender VARCHAR(10),
+        age INT,
+        disease VARCHAR(100),
+        join_date DATE,
+        blood_group VARCHAR(5)
+    )`;
+
+    const createAppointment = `
+    CREATE TABLE IF NOT EXISTS Appointment_Details (
+        appointment_id INT AUTO_INCREMENT PRIMARY KEY,
+        patient_id INT NOT NULL,
+        doctor_id INT NOT NULL,
+        appointment_date DATE,
+        bill_amount DECIMAL(10,2),
+        FOREIGN KEY (patient_id) REFERENCES Patient(patient_id) ON DELETE CASCADE,
+        FOREIGN KEY (doctor_id) REFERENCES Doctor(doctor_id) ON DELETE CASCADE
+    )`;
+
+    const seedDoctor = `
+    INSERT INTO Doctor (name, specialization, email, availability_from, availability_to, room_no)
+    SELECT * FROM (SELECT 1 AS id, 'Dr. Arjun Mehta' AS name, 'Cardiologist' AS spec, 'arjun@hospital.com' AS email, '09:00:00' AS af, '17:00:00' AS at, 'A-101' AS rm) AS tmp
+    WHERE NOT EXISTS (SELECT name FROM Doctor WHERE name = 'Dr. Arjun Mehta') LIMIT 1;
+    `;
+
+    db.query(createDoctor, () => {
+        db.query(createPatient, () => {
+            db.query(createAppointment, () => {
+                db.query(seedDoctor, () => {
+                    console.log("✅ All Tables & Seed Data Ready!");
+                });
+            });
+        });
+    });
+}
 
 /* ---------------- ADMIN AUTH MIDDLEWARE ---------------- */
 // Password: 123456 — required for Add Doctor, Delete Patient
