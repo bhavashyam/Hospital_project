@@ -67,17 +67,55 @@ function initDB() {
         FOREIGN KEY (doctor_id) REFERENCES Doctor(doctor_id) ON DELETE CASCADE
     )`;
 
-    const seedDoctor = `
-    INSERT INTO Doctor (name, specialization, email, availability_from, availability_to, room_no)
-    SELECT * FROM (SELECT 1 AS id, 'Dr. Arjun Mehta' AS name, 'Cardiologist' AS spec, 'arjun@hospital.com' AS email, '09:00:00' AS af, '17:00:00' AS at, 'A-101' AS rm) AS tmp
-    WHERE NOT EXISTS (SELECT name FROM Doctor WHERE name = 'Dr. Arjun Mehta') LIMIT 1;
+    const seedDoctors = `
+    INSERT IGNORE INTO Doctor (doctor_id, name, specialization, email, availability_from, availability_to, room_no) VALUES
+    (1, 'Dr. Arjun Mehta', 'Cardiology', 'arjun@hospital.com', '09:00:00', '13:00:00', '101'),
+    (2, 'Dr. Priya Sharma', 'Dermatology', 'priya@hospital.com', '10:00:00', '14:00:00', '102'),
+    (3, 'Dr. Rahul Verma', 'Neurology', 'rahul@hospital.com', '11:00:00', '15:00:00', '103'),
+    (4, 'Dr. Sneha Patel', 'Orthopedic', 'sneha@hospital.com', '09:30:00', '12:30:00', '104'),
+    (5, 'Dr. Vikram Singh', 'General Physician', 'vikram@hospital.com', '12:00:00', '16:00:00', '105'),
+    (6, 'Dr. Ananya Roy', 'Cardiology', 'ananya.roy@hospital.com', '08:00:00', '12:00:00', '106'),
+    (7, 'Dr. Rajesh Kothari', 'Neurology', 'rajesh.k@hospital.com', '10:00:00', '14:00:00', '107'),
+    (8, 'Dr. Meera Nambiar', 'Pediatrics', 'meera.n@hospital.com', '13:00:00', '17:00:00', '108'),
+    (9, 'Dr. Vikramaditya Joshi', 'Orthopedic', 'vikram.j@hospital.com', '09:00:00', '13:00:00', '109'),
+    (10, 'Dr. Sunita Deshmukh', 'Dermatology', 'sunita.d@hospital.com', '11:00:00', '15:00:00', '110'),
+    (11, 'Dr. Farhan Qureshi', 'General Physician', 'farhan.q@hospital.com', '10:00:00', '14:00:00', '111'),
+    (12, 'Dr. Kavita Reddy', 'Gynecology', 'kavita.r@hospital.com', '09:00:00', '13:00:00', '112'),
+    (13, 'Dr. Siddharth Sen', 'ENT', 'siddharth.s@hospital.com', '12:00:00', '16:00:00', '113'),
+    (14, 'Dr. Pooja Malhotra', 'Psychiatry', 'pooja.m@hospital.com', '10:00:00', '14:00:00', '114'),
+    (15, 'Dr. Amitav Banerjee', 'Oncology', 'amitav.b@hospital.com', '09:30:00', '13:30:00', '115'),
+    (16, 'Dr. Neha Kapoor', 'Pediatrics', 'neha.k@hospital.com', '11:00:00', '15:00:00', '116'),
+    (17, 'Dr. Alok Nath', 'General Physician', 'alok.n@hospital.com', '12:00:00', '16:00:00', '117'),
+    (18, 'Dr. Deepa Nair', 'Cardiology', 'deepa.n@hospital.com', '08:00:00', '12:00:00', '118'),
+    (19, 'Dr. Manish Gupta', 'Neurology', 'manish.g@hospital.com', '10:00:00', '14:00:00', '119'),
+    (20, 'Dr. Swati Ghosh', 'Dermatology', 'swati.g@hospital.com', '09:00:00', '13:00:00', '120'),
+    (21, 'Dr. Tarun Saxena', 'Orthopedic', 'tarun.s@hospital.com', '11:00:00', '15:00:00', '121'),
+    (22, 'Dr. Ritu Choudhury', 'ENT', 'ritu.c@hospital.com', '09:30:00', '13:30:00', '122'),
+    (23, 'Dr. Nikhil Bajaj', 'Urology', 'nikhil.b@hospital.com', '12:00:00', '16:00:00', '123'),
+    (24, 'Dr. Shalini Pillai', 'Gynecology', 'shalini.p@hospital.com', '10:00:00', '14:00:00', '124'),
+    (25, 'Dr. Harish Bhat', 'Gastroenterology', 'harish.b@hospital.com', '08:00:00', '12:00:00', '125'),
+    (26, 'Dr. Tanvi Shah', 'Endocrinology', 'tanvi.s@hospital.com', '13:00:00', '17:00:00', '126'),
+    (27, 'Dr. Kunal Singhania', 'Cardiology', 'kunal.s@hospital.com', '09:00:00', '13:00:00', '127'),
+    (28, 'Dr. Vandana Rao', 'Pediatrics', 'vandana.r@hospital.com', '10:00:00', '14:00:00', '128'),
+    (29, 'Dr. Sameer Aggarwal', 'Pulmonology', 'sameer.a@hospital.com', '11:00:00', '15:00:00', '129'),
+    (30, 'Dr. Pradeep Mishra', 'Nephrology', 'pradeep.m@hospital.com', '09:30:00', '12:30:00', '130'),
+    (31, 'Dr. Smita Kulkarni', 'Ophthalmology', 'smita.k@hospital.com', '12:00:00', '16:00:00', '131'),
+    (32, 'Dr. Gaurav Dubey', 'Rheumatology', 'gaurav.d@hospital.com', '08:00:00', '12:00:00', '132'),
+    (33, 'Dr. Divya Menon', 'Psychiatry', 'divya.m@hospital.com', '10:00:00', '14:00:00', '133'),
+    (34, 'Dr. Ashish Trivedi', 'General Surgery', 'ashish.t@hospital.com', '11:00:00', '15:00:00', '134'),
+    (35, 'Dr. Bina Chawla', 'Pathology', 'bina.c@hospital.com', '09:00:00', '13:00:00', '135'),
+    (36, 'Dr. Suresh Ranganathan', 'Cardiology', 'suresh.r@hospital.com', '12:00:00', '16:00:00', '136'),
+    (37, 'Dr. Payal Sengupta', 'Dermatology', 'payal.s@hospital.com', '10:00:00', '14:00:00', '137'),
+    (38, 'Dr. Mohit Chauhan', 'Orthopedic', 'mohit.c@hospital.com', '08:30:00', '12:30:00', '138'),
+    (39, 'Dr. Kiran Deshpande', 'Gynecology', 'kiran.d@hospital.com', '13:00:00', '17:00:00', '139'),
+    (40, 'Dr. Chetan Bhagat', 'Neurology', 'chetan.b@hospital.com', '09:00:00', '13:00:00', '140');
     `;
 
     db.query(createDoctor, () => {
         db.query(createPatient, () => {
             db.query(createAppointment, () => {
-                db.query(seedDoctor, () => {
-                    console.log("✅ All Tables & Seed Data Ready!");
+                db.query(seedDoctors, () => {
+                    console.log("✅ 40 Doctors Seeded Successfully!");
                 });
             });
         });
